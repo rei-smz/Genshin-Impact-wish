@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <script src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+        <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/echarts/5.0.0/echarts.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>原神抽卡模拟器</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <h1>欢迎使用原神抽卡模拟器</h1>
+                <p>您可以根据提示设置相关参数，获取模拟抽卡的结果与分析图表。注意：本抽卡模拟器仅模拟角色up池的5星抽取情况，结果仅供参考，且<span class="text-danger">本模拟器与原神官方没有任何关系！</span></p>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>输入您在上一次抽出5星之后抽的次数（默认为0）:</p><p><input type="text" id="pre_times"></p>
+                    <p>输入您打算抽的次数：</p><p><input type="text" id="wish_times"></p>
+                    <button class="btn btn-primary" onclick="checkInput()">点我抽卡</button>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="card-title">抽取结果:</p>
+                        </div>
+                        <div class="card-body" id="wish_result"></div>
+                    </div>
+                </div>
+                <div id="ColChart" class="col"></div>
+            </div>
+        </div>
+        <script src="wish.js"></script>
+        <script>
+            var ColChartoption = {
+                title: {
+                    text: '结果分布'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['<10','<20','<30','<40','<50','<60','<70','<80','<90']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                        data: window.case_range,
+                        type: 'bar',
+                        showBackground: true,
+                        backgroundStyle: {
+                            color: 'rgba(180, 180, 180, 0.2)'
+                        }
+                    }]
+            };
+            setInterval(function() {
+                Colchart.setOption({
+                    series: [{
+                        data: window.case_range,
+                        type: 'bar',
+                        showBackground: true,
+                        backgroundStyle: {
+                            color: 'rgba(180, 180, 180, 0.2)'
+                        }
+                    }]
+                });
+            },1000);
+            var Colchart = echarts.init(document.getElementById('ColChart'));
+            Colchart.setOption(ColChartoption);
+            function makeAWish(times){
+                var i;
+                var w = wish;
+                for(i=0;i<times;i++)
+                {
+                    w();
+                }
+            }
+            function checkInput(){
+                var pret,wt;
+                pret = document.getElementById("pre_times").value;
+                wt = document.getElementById("wish_times").value;
+                if(pret=="")
+                    pret = 0;
+                else
+                    pret = Number(pret);
+                if(wt=="")
+                    wt = 0;
+                else
+                    wt = Number(wt);
+                if(pret<0||wt<=0)
+                    alert("您输入的数据不合法！");
+                else
+                {
+                    window.cnt = 1 + pret;
+                    document.getElementById("wish_result").innerHTML = "";
+                    makeAWish(wt);
+                }
+            }
+        </script>
+        
+    </body>
+</html>
